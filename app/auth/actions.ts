@@ -124,6 +124,9 @@ export async function signup(formData: FormData) {
       [userId, trimmedNome, trimmedEmail]
     )
 
+    // Limpar qualquer sessão anterior antes de fazer login com a nova conta
+    await clearAuthToken()
+    
     // Fazer login automaticamente
     await setAuthToken(userId)
 

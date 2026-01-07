@@ -68,6 +68,23 @@ export async function setAuthToken(userId: string): Promise<void> {
 }
 
 export async function clearAuthToken(): Promise<void> {
-  const cookieStore = await cookies()
-  cookieStore.delete(COOKIE_NAME)
+  try {
+    const cookieStore = await cookies()
+    const isHttps = process.env.HTTPS === "true" || 
+                    process.env.NEXT_PUBLIC_HTTPS === "true"
+    
+    // Deletar o cookie com as mesmas opções usadas para criá-lo
+    cookieStore.set(COOKIE_NAME, "", {
+      httpOnly: true,
+      secure: isHttps,
+      sameSite: "lax",
+      maxAge: 0, // Expirar imediatamente
+      path: "/",
+    })
+    
+    console.log("[Auth] Cookie limpo com sucesso")
+  } catch (error) {
+    console.error("[Auth] Erro ao limpar token:", error)
+    throw error
+  }
 }

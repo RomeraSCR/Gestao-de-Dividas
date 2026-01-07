@@ -39,8 +39,8 @@ export default async function proxy(request: NextRequest) {
     user
   ) {
     // Permite acessar a tela de login/cadastro mesmo estando autenticado (ex.: trocar de conta)
-    // Use /auth/login?force=1
-    if (request.nextUrl.searchParams.get("force") === "1") {
+    // Use /auth/login?force=1 ou /auth/cadastro (sempre permitido para criar nova conta)
+    if (request.nextUrl.searchParams.get("force") === "1" || request.nextUrl.pathname.startsWith("/auth/cadastro")) {
       return NextResponse.next()
     }
     const url = request.nextUrl.clone()
