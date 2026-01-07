@@ -1,0 +1,61 @@
+# Cloudflare Pages Headers Configuration
+# Este arquivo é usado pelo Cloudflare Pages para configurar headers HTTP
+
+# Páginas dinâmicas - SEM cache
+/dashboard/*
+  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+
+/auth/*
+  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+
+# API routes - SEM cache
+/api/*
+  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+
+# Assets estáticos com hash - Cache longo (1 ano)
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+  CDN-Cache-Control: public, max-age=31536000, immutable
+
+# Arquivos JS/CSS com hash - Cache longo
+/_next/*.js
+  Cache-Control: public, max-age=31536000, immutable
+  CDN-Cache-Control: public, max-age=31536000, immutable
+
+/_next/*.css
+  Cache-Control: public, max-age=31536000, immutable
+  CDN-Cache-Control: public, max-age=31536000, immutable
+
+# Imagens e ícones - Cache médio (1 dia)
+/*.svg
+  Cache-Control: public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800
+  CDN-Cache-Control: public, max-age=86400, s-maxage=86400
+
+/*.png
+  Cache-Control: public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800
+  CDN-Cache-Control: public, max-age=86400, s-maxage=86400
+
+/*.jpg
+  Cache-Control: public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800
+  CDN-Cache-Control: public, max-age=86400, s-maxage=86400
+
+/*.ico
+  Cache-Control: public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800
+  CDN-Cache-Control: public, max-age=86400, s-maxage=86400
+
+# PWA - manter sempre atualizado
+/sw.js
+  Cache-Control: no-store, max-age=0
+  CDN-Cache-Control: no-store
+
+/manifest.webmanifest
+  Cache-Control: no-store, max-age=0
+  CDN-Cache-Control: no-store
+
+# Página inicial - Cache curto (5 minutos)
+/
+  Cache-Control: public, max-age=300, s-maxage=300, stale-while-revalidate=600
+  CDN-Cache-Control: public, max-age=300, s-maxage=300
