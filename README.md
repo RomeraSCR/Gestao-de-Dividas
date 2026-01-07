@@ -25,17 +25,17 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/stargazers">
-    <img src="https://img.shields.io/github/stars/RomeraSCR/Gest-o-de-Dividas?style=social" alt="Stars">
+  <a href="https://github.com/RomeraSCR/Gestao-de-Dividas/stargazers">
+    <img src="https://img.shields.io/github/stars/RomeraSCR/Gestao-de-Dividas?style=social" alt="Stars">
   </a>
-  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/network/members">
-    <img src="https://img.shields.io/github/forks/RomeraSCR/Gest-o-de-Dividas?style=social" alt="Forks">
+  <a href="https://github.com/RomeraSCR/Gestao-de-Dividas/network/members">
+    <img src="https://img.shields.io/github/forks/RomeraSCR/Gestao-de-Dividas?style=social" alt="Forks">
   </a>
-  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/issues">
-    <img src="https://img.shields.io/github/issues/RomeraSCR/Gest-o-de-Dividas" alt="Issues">
+  <a href="https://github.com/RomeraSCR/Gestao-de-Dividas/issues">
+    <img src="https://img.shields.io/github/issues/RomeraSCR/Gestao-de-Dividas" alt="Issues">
   </a>
-  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/RomeraSCR/Gest-o-de-Dividas" alt="License">
+  <a href="https://github.com/RomeraSCR/Gestao-de-Dividas/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/RomeraSCR/Gestao-de-Dividas" alt="License">
   </a>
 </p>
 
@@ -157,10 +157,10 @@ Acesse a demonstração online:
 
 ```bash
 # Clone o repositório
-git clone https://github.com/RomeraSCR/gestao-dividas.git
+git clone https://github.com/RomeraSCR/Gestao-de-Dividas.git
 
 # Entre na pasta
-cd gestao-dividas
+cd Gestao-de-Dividas
 
 # Instale as dependências
 pnpm install
