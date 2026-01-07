@@ -13,6 +13,7 @@
   <a href="#-demo">Demo</a> •
   <a href="#-tecnologias">Tecnologias</a> •
   <a href="#-instalação">Instalação</a> •
+  <a href="#-releases">Releases</a> •
   <a href="#-contribuidores">Contribuidores</a>
 </p>
 
@@ -22,6 +23,21 @@
   <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript">
   <img src="https://img.shields.io/badge/Tailwind-4.1-06B6D4?style=for-the-badge&logo=tailwindcss" alt="Tailwind">
   <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+</p>
+
+<p align="center">
+  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/stargazers">
+    <img src="https://img.shields.io/github/stars/RomeraSCR/Gest-o-de-Dividas?style=social" alt="Stars">
+  </a>
+  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/network/members">
+    <img src="https://img.shields.io/github/forks/RomeraSCR/Gest-o-de-Dividas?style=social" alt="Forks">
+  </a>
+  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/issues">
+    <img src="https://img.shields.io/github/issues/RomeraSCR/Gest-o-de-Dividas" alt="Issues">
+  </a>
+  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/RomeraSCR/Gest-o-de-Dividas" alt="License">
+  </a>
 </p>
 
 <br>
@@ -215,6 +231,83 @@ gestao-dividas/
 - [ ] Exportar relatórios (PDF/Excel)
 - [ ] Múltiplas contas por usuário
 - [ ] Categorização de dívidas
+
+<br>
+
+## 🚀 Releases
+
+<p align="center">
+  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/releases">
+    <img src="https://img.shields.io/github/v/release/RomeraSCR/Gest-o-de-Dividas?style=for-the-badge&logo=github&color=blue" alt="Latest Release">
+  </a>
+  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/releases">
+    <img src="https://img.shields.io/github/release-date/RomeraSCR/Gest-o-de-Dividas?style=for-the-badge&logo=github&color=green" alt="Release Date">
+  </a>
+  <a href="https://github.com/RomeraSCR/Gest-o-de-Dividas/commits/main">
+    <img src="https://img.shields.io/github/commits-since/RomeraSCR/Gest-o-de-Dividas/latest?style=for-the-badge&logo=github" alt="Commits Since">
+  </a>
+</p>
+
+### 📋 Histórico de Versões
+
+| Versão | Data | Destaques |
+|--------|------|-----------|
+| **v1.0.0** | Janeiro 2026 | 🎉 Lançamento inicial - Dashboard, gestão de parcelas, PWA |
+
+> 📥 **[Ver todas as releases](https://github.com/RomeraSCR/Gest-o-de-Dividas/releases)**
+
+<br>
+
+## 📦 Packages
+
+Este projeto não publica packages no npm, mas você pode usar como template:
+
+```bash
+# Clone diretamente
+git clone https://github.com/RomeraSCR/Gest-o-de-Dividas.git
+
+# Ou use como template no GitHub
+# Clique em "Use this template" no topo do repositório
+```
+
+### 🐳 Docker (Em breve)
+
+```bash
+# Pull da imagem (quando disponível)
+docker pull ghcr.io/romerascr/gestao-dividas:latest
+
+# Executar container
+docker run -p 3536:3536 ghcr.io/romerascr/gestao-dividas:latest
+```
+
+<br>
+
+## 🌐 Deployments
+
+<p align="center">
+  <a href="https://dividas.neonproject.cloud">
+    <img src="https://img.shields.io/badge/Production-Online-success?style=for-the-badge&logo=vercel" alt="Production">
+  </a>
+  <a href="https://dividas.neonproject.cloud">
+    <img src="https://img.shields.io/badge/Uptime-99.9%25-brightgreen?style=for-the-badge&logo=statuspage" alt="Uptime">
+  </a>
+</p>
+
+### 🖥️ Ambientes
+
+| Ambiente | URL | Status |
+|----------|-----|--------|
+| 🟢 **Production** | [dividas.neonproject.cloud](https://dividas.neonproject.cloud) | ![Status](https://img.shields.io/badge/status-online-success) |
+| 🟡 **Staging** | Em breve | ![Status](https://img.shields.io/badge/status-planned-yellow) |
+| 🔵 **Development** | `localhost:3536` | ![Status](https://img.shields.io/badge/status-local-blue) |
+
+### ☁️ Deploy Your Own
+
+Faça deploy com um clique:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/RomeraSCR/Gest-o-de-Dividas&env=DB_HOST,DB_USER,DB_PASSWORD,DB_NAME,JWT_SECRET,NEXT_PUBLIC_SITE_URL)
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/RomeraSCR/Gest-o-de-Dividas)
 
 <br>
 
