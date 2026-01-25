@@ -2,7 +2,7 @@
   <img src="public/logo_circular.png" alt="Gestão de Dívidas" width="120" height="120" style="border-radius: 50%;">
 </p>
 
-<h1 align="center">💳 Gestão de Dívidas</h1>
+<h1 align="center">💳 Gestão de Dívidas Pessoais</h1>
 
 <p align="center">
   <strong>Controle total das suas compras parceladas</strong>
