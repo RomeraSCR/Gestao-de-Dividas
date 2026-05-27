@@ -22,16 +22,16 @@
   
   <!-- Title -->
   <text x="480" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="80" font-weight="bold" fill="white">
-    Gestão de Dívidas
+    FinanzLivre
   </text>
   
   <!-- Subtitle -->
   <text x="480" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="40" fill="rgba(255, 255, 255, 0.95)">
-    Controle total das suas compras parceladas
+    Controle Financeiro Pessoal 100% Grátis
   </text>
   
   <!-- Description -->
   <text x="480" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="rgba(255, 255, 255, 0.85)">
-    Gerencie suas dívidas e acompanhe os pagamentos
+    Gerencie receitas, despesas, poupança e parcelamentos sem planilhas
   </text>
 </svg>

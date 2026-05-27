@@ -33,6 +33,9 @@ export function getDbPool(): mysql.Pool {
 
 // Função auxiliar para garantir que o banco está inicializado antes de usar
 export async function ensureInitialized() {
+  if (process.env.DB_MOCK === "true") {
+    return
+  }
   getDbPool() // Cria o pool se não existir
   if (initPromise) {
     await initPromise
@@ -40,6 +43,10 @@ export async function ensureInitialized() {
 }
 
 export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> {
+  if (process.env.DB_MOCK === "true") {
+    const { mockQuery } = require("./mock-db")
+    return mockQuery(sql, params) as T[]
+  }
   await ensureInitialized()
   const connection = await getDbPool().getConnection()
   try {
@@ -51,6 +58,10 @@ export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> 
 }
 
 export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | null> {
+  if (process.env.DB_MOCK === "true") {
+    const { mockQueryOne } = require("./mock-db")
+    return mockQueryOne(sql, params) as T | null
+  }
   const results = await query<T>(sql, params)
   return results[0] || null
 }

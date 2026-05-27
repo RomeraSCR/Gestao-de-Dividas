@@ -1,14 +1,16 @@
 "use client"
 
 import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Wallet, TrendingUp, CreditCard, CalendarDays } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Wallet, TrendingUp, CreditCard, CalendarDays, Eye, EyeOff } from "lucide-react"
 import type { Divida } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
 import { addMonths } from "date-fns"
 import { mulMoney, sumMoney } from "@/lib/money"
 import { MesDetalhesDialog } from "@/components/mes-detalhes-dialog"
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts"
 
 interface DividasStatsProps {
   dividas: Divida[]
@@ -23,6 +25,7 @@ export function DividasStats({ dividas }: DividasStatsProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
   const [selectedMes, setSelectedMes] = useState<{ key: string; label: string } | null>(null)
+  const [showProjecaoTabela, setShowProjecaoTabela] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -134,7 +137,7 @@ export function DividasStats({ dividas }: DividasStatsProps) {
     const totals = new Map<string, { date: Date; total: number }>()
 
     for (const divida of dividas) {
-      const fatura = parseToDate(divida.data_fatura)
+      const fatura = parseToDate(divida.data_inicio) || parseToDate(divida.data_fatura)
       if (!fatura) continue
       const start = Math.max(1, (Number(divida.parcelas_pagas) || 0) + 1)
       const end = Number(divida.total_parcelas) || 0
@@ -161,166 +164,234 @@ export function DividasStats({ dividas }: DividasStatsProps) {
     }
   })()
 
+  // Formatar dados para o gráfico de projeção
+  const chartData = mensal.items.map((item, index) => {
+    const monthName = capitalize(item.date.toLocaleDateString("pt-BR", { month: "short" })).replace(".", "")
+    const yearShort = String(item.date.getFullYear()).slice(-2)
+    const label = capitalize(item.date.toLocaleDateString("pt-BR", { month: "long" })) + (item.date.getFullYear() === mensal.nowYear ? "" : `/${item.date.getFullYear()}`)
+    return {
+      key: item.key,
+      label,
+      name: `${monthName}/${yearShort}`,
+      total: item.total,
+      isNext: index === 0
+    }
+  })
+
   return (
     <div className="mb-8 space-y-6">
       <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-        <Card className="backdrop-blur-xl bg-white/70 dark:bg-slate-900/40 border-white/20 dark:border-blue-500/30 shadow-xl dark:shadow-blue-500/10 dark:neon-border hover:shadow-2xl dark:hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 overflow-hidden">
+        <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2 min-w-0">
-            <CardTitle className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate">Total de Dívidas</CardTitle>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-              <Wallet className="h-4 w-4 text-white" />
+            <CardTitle className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">Total de Parcelamentos</CardTitle>
+            <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <Wallet className="h-4 w-4" />
             </div>
           </CardHeader>
           <CardContent className="overflow-hidden">
-            <div
-              className={cn(
-                "font-bold bg-gradient-to-r from-blue-600 to-pink-600 dark:from-blue-400 dark:to-blue-500 bg-clip-text text-transparent leading-none tracking-tight tabular-nums break-words overflow-hidden",
-                "text-lg sm:text-xl md:text-2xl lg:text-3xl",
-              )}
-            >
+            <div className={cn(
+              "font-extrabold text-slate-900 dark:text-white leading-none tracking-tight tabular-nums break-words overflow-hidden",
+              "text-lg sm:text-xl md:text-2xl lg:text-3xl"
+            )}>
               {totalDividasText}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 break-words">Compras parceladas ativas</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words">Parcelamentos ativos</p>
           </CardContent>
         </Card>
 
-        <Card className="backdrop-blur-xl bg-white/70 dark:bg-slate-900/40 border-white/20 dark:border-blue-500/30 shadow-xl dark:shadow-blue-500/10 dark:neon-border hover:shadow-2xl dark:hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 overflow-hidden">
+        <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2 min-w-0">
-            <CardTitle className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate">A Pagar</CardTitle>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-pink-500 to-pink-600">
-              <TrendingUp className="h-4 w-4 text-white" />
+            <CardTitle className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">A Pagar</CardTitle>
+            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
+              <TrendingUp className="h-4 w-4" />
             </div>
           </CardHeader>
           <CardContent className="overflow-hidden">
-            <div
-              className={cn(
-                "font-bold text-pink-600 dark:text-pink-400 leading-none tracking-tight tabular-nums break-words overflow-hidden",
-                "text-sm sm:text-base md:text-lg lg:text-xl",
-              )}
-            >
+            <div className={cn(
+              "font-extrabold text-red-600 dark:text-red-400 leading-none tracking-tight tabular-nums break-words overflow-hidden",
+              "text-sm sm:text-base md:text-lg lg:text-xl"
+            )}>
               {totalAPagarText}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 break-words">Parcelas restantes</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words">Parcelas restantes</p>
           </CardContent>
         </Card>
 
-        <Card className="backdrop-blur-xl bg-white/70 dark:bg-slate-900/40 border-white/20 dark:border-blue-500/30 shadow-xl dark:shadow-blue-500/10 dark:neon-border hover:shadow-2xl dark:hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 overflow-hidden">
+        <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2 min-w-0">
-            <CardTitle className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate">Já Pago</CardTitle>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-              <Image src="/logo_circular.png" alt="Brasil Dívidas" width={16} height={16} className="h-4 w-4 rounded-full" />
+            <CardTitle className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">Já Pago</CardTitle>
+            <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+              <Image src="/logo_circular.png" alt="FinanzLivre Logo" width={16} height={16} className="h-4 w-4 rounded-full shrink-0 grayscale opacity-80" />
             </div>
           </CardHeader>
           <CardContent className="overflow-hidden">
-            <div
-              className={cn(
-                "font-bold text-blue-600 dark:text-blue-400 leading-none tracking-tight tabular-nums break-words overflow-hidden",
-                "text-sm sm:text-base md:text-lg lg:text-xl",
-              )}
-            >
+            <div className={cn(
+              "font-extrabold text-emerald-600 dark:text-emerald-400 leading-none tracking-tight tabular-nums break-words overflow-hidden",
+              "text-sm sm:text-base md:text-lg lg:text-xl"
+            )}>
               {totalPagoText}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 break-words">Parcelas quitadas</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words">Parcelas quitadas</p>
           </CardContent>
         </Card>
 
-        <Card className="backdrop-blur-xl bg-white/70 dark:bg-slate-900/40 border-white/20 dark:border-blue-500/30 shadow-xl dark:shadow-blue-500/10 dark:neon-border hover:shadow-2xl dark:hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 overflow-hidden">
+        <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2 min-w-0">
-            <CardTitle className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate">Total Geral</CardTitle>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-pink-500 to-blue-500">
-              <CreditCard className="h-4 w-4 text-white" />
+            <CardTitle className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">Total Geral</CardTitle>
+            <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <CreditCard className="h-4 w-4" />
             </div>
           </CardHeader>
           <CardContent className="overflow-hidden">
-            <div
-              className={cn(
-                "font-bold bg-gradient-to-r from-blue-600 to-pink-600 dark:from-blue-400 dark:to-blue-500 bg-clip-text text-transparent leading-none tracking-tight tabular-nums break-words overflow-hidden",
-                "text-sm sm:text-base md:text-lg lg:text-xl",
-              )}
-            >
+            <div className={cn(
+              "font-extrabold text-slate-900 dark:text-white leading-none tracking-tight tabular-nums break-words overflow-hidden",
+              "text-sm sm:text-base md:text-lg lg:text-xl"
+            )}>
               {totalGeralText}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 break-words">Valor total das compras</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words">Valor total das compras</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card 
-        className="backdrop-blur-xl bg-white/70 dark:bg-slate-900/40 border-white/20 dark:border-blue-500/30 shadow-xl dark:shadow-blue-500/10 dark:neon-border"
-        data-tour="stats-mensal"
-      >
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/15 to-pink-500/15 border border-white/30 dark:border-blue-500/30">
-              <CalendarDays className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            </span>
-            Total mensal a pagar
-          </CardTitle>
+      <Card className="bg-card border border-border shadow-sm">
+        <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                <CalendarDays className="h-4 w-4" />
+              </span>
+              Projeção Mensal de Parcelas
+            </CardTitle>
+            <CardDescription className="text-sm">Gráfico de faturas estimadas para os próximos 12 meses</CardDescription>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowProjecaoTabela(!showProjecaoTabela)}
+            className="text-xs border-border text-slate-700 dark:text-slate-300 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800"
+          >
+            {showProjecaoTabela ? (
+              <>
+                <EyeOff className="h-3.5 w-3.5 mr-1.5" />
+                Ocultar Valores Numéricos
+              </>
+            ) : (
+              <>
+                <Eye className="h-3.5 w-3.5 mr-1.5" />
+                Visualizar Valores Numéricos
+              </>
+            )}
+          </Button>
         </CardHeader>
-        <CardContent>
-          {!mounted ? (
-            <p className="text-sm text-muted-foreground">Carregando resumo mensal…</p>
-          ) : mensal.items.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sem parcelas pendentes.</p>
-          ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {mensal.items.map((item) => {
-                const monthName = capitalize(item.date.toLocaleDateString("pt-BR", { month: "long" }))
-                const year = item.date.getFullYear()
-                const label = year === mensal.nowYear ? monthName : `${monthName}/${year}`
-                const isNext = item.key === mensal.items[0]?.key
-                return (
-                  <div
-                    key={item.key}
-                    onClick={() => setSelectedMes({ key: item.key, label })}
-                    className={cn(
-                      "relative overflow-hidden rounded-xl border p-4 shadow-sm transition-all cursor-pointer",
-                      "bg-gradient-to-br from-white/80 via-white/60 to-white/40 dark:from-slate-950/40 dark:via-slate-950/30 dark:to-slate-900/20",
-                      "border-white/30 dark:border-blue-500/25",
-                      "hover:shadow-md hover:-translate-y-0.5 hover:border-blue-400/50 dark:hover:border-blue-400/40",
-                      isNext && "ring-1 ring-blue-500/30 dark:ring-blue-400/30",
-                    )}
+        <CardContent className="space-y-6">
+          {/* GRÁFICO DE PROJEÇÃO (Sempre visível por padrão!) */}
+          <div className="h-[250px] w-full">
+            {mounted ? (
+              chartData.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-sm text-slate-500">
+                  Nenhuma parcela pendente projetada.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={chartData}
+                    margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
                   >
-                    <div
-                      className={cn(
-                        "pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl",
-                        isNext ? "bg-blue-500/20 dark:bg-blue-500/15" : "bg-pink-500/15 dark:bg-blue-600/10",
-                      )}
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `R$${v}`} />
+                    <Tooltip
+                      formatter={(val: any) => formatCurrency(Number(val))}
+                      contentStyle={{
+                        backgroundColor: "rgba(15, 23, 42, 0.95)",
+                        border: "none",
+                        borderRadius: "8px",
+                        color: "#fff",
+                        fontSize: "11px",
+                      }}
                     />
+                    <Bar 
+                      dataKey="total" 
+                      radius={[4, 4, 0, 0]}
+                      cursor="pointer"
+                      onClick={(data) => {
+                        if (data && data.key) {
+                          setSelectedMes({ key: data.key, label: data.label })
+                        }
+                      }}
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.isNext ? "var(--color-chart-2)" : "var(--primary)"} 
+                          className="transition-all hover:opacity-85"
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )
+            ) : (
+              <div className="h-full w-full bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse" />
+            )}
+          </div>
 
-                    <div className="relative flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-foreground truncate">{label}</span>
-                          {isNext && (
-                            <span className="text-[10px] leading-none px-2 py-1 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
-                              Próximo
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">Valor total do mês</p>
-                      </div>
+          {/* TABELA DE VALORES EM GRADE (Opcional, oculta por padrão!) */}
+          {showProjecaoTabela && (
+            <div className="pt-4 border-t border-border animate-fade-in">
+              {!mounted ? (
+                <p className="text-sm text-slate-500">Carregando resumo mensal…</p>
+              ) : mensal.items.length === 0 ? (
+                <p className="text-sm text-slate-500">Sem parcelas pendentes.</p>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {mensal.items.map((item) => {
+                    const monthName = capitalize(item.date.toLocaleDateString("pt-BR", { month: "long" }))
+                    const year = item.date.getFullYear()
+                    const label = year === mensal.nowYear ? monthName : `${monthName}/${year}`
+                    const isNext = item.key === mensal.items[0]?.key
+                    return (
+                      <div
+                        key={item.key}
+                        onClick={() => setSelectedMes({ key: item.key, label })}
+                        className={cn(
+                          "relative overflow-hidden rounded-lg border p-4 shadow-sm transition-all cursor-pointer bg-slate-50/50 dark:bg-slate-900/20 border-border hover:border-slate-400 dark:hover:border-slate-700",
+                          isNext && "ring-1 ring-emerald-500/30 dark:ring-emerald-400/30",
+                        )}
+                      >
+                        <div className="relative flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{label}</span>
+                              {isNext && (
+                                <span className="text-[10px] leading-none px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-medium">
+                                  Próxima
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 mt-1">Valor total do mês</p>
+                          </div>
 
-                      <div className="text-right shrink-0">
-                        <div
-                          className={cn(
-                            "font-bold tabular-nums tracking-tight",
-                            isNext ? "text-blue-700 dark:text-blue-300" : "text-foreground",
-                          )}
-                        >
-                          {formatCurrency(item.total)}
+                          <div className="text-right shrink-0">
+                            <div className={cn(
+                              "font-bold tabular-nums tracking-tight",
+                              isNext ? "text-emerald-600 dark:text-emerald-400" : "text-slate-800 dark:text-slate-200",
+                            )}>
+                              {formatCurrency(item.total)}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                )
-              })}
+                    )
+                  })}
+                </div>
+              )}
+              {isLoading && (
+                <p className="mt-2 text-xs text-slate-500">
+                  Carregando valores de parcelas variáveis…
+                </p>
+              )}
             </div>
-          )}
-          {isLoading && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Carregando valores de parcelas variáveis…
-            </p>
           )}
         </CardContent>
       </Card>

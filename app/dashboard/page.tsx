@@ -2,10 +2,9 @@ import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
 import { query } from "@/lib/db"
 import { DashboardHeaderShell } from "@/components/dashboard-header-shell"
-import { DividasList } from "@/components/dividas-list"
-import { DividasStatsClient } from "@/components/dividas-stats-client"
+import { DashboardContainer } from "@/components/dashboard-container"
 import { DashboardUpdates } from "@/components/dashboard-updates"
-import type { Divida } from "@/lib/types"
+import type { Divida, Receita, Gasto, Poupanca } from "@/lib/types"
 
 // Forçar renderização dinâmica - desabilita cache
 export const dynamic = 'force-dynamic'
@@ -18,8 +17,9 @@ export default async function DashboardPage() {
     return null // TypeScript guard
   }
 
+  // 1. Dívidas parceladas
   const dividas = await query<Divida>(
-    "SELECT id, user_id, autor, produto, loja, data_fatura, total_parcelas, parcelas_pagas, valor_parcela, COALESCE(valor_variavel, 0) as valor_variavel, created_at, updated_at FROM dividas WHERE user_id = ? ORDER BY data_fatura DESC",
+    "SELECT id, user_id, autor, produto, loja, data_fatura, total_parcelas, parcelas_pagas, valor_parcela, COALESCE(valor_variavel, 0) as valor_variavel, data_fechamento, data_inicio, data_fim, created_at, updated_at FROM dividas WHERE user_id = ? ORDER BY data_fatura DESC",
     [user.id]
   )
   
@@ -29,31 +29,60 @@ export default async function DashboardPage() {
     valor_variavel: Boolean(d.valor_variavel)
   }))
 
-  return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Animated gradient background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-pink-50 to-blue-100 dark:from-slate-950 dark:via-blue-950 dark:to-slate-900 -z-10" />
+  // 2. Receitas
+  const receitas = await query<Receita>(
+    "SELECT id, user_id, valor, descricao, data_receita, created_at FROM receitas WHERE user_id = ? ORDER BY data_receita DESC",
+    [user.id]
+  )
 
-      {/* Floating orbs */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-400/30 dark:bg-blue-500/20 rounded-full blur-3xl animate-pulse dark:neon-glow" />
-        <div className="absolute top-1/2 -right-40 w-96 h-96 bg-pink-400/30 dark:bg-blue-600/20 rounded-full blur-3xl animate-pulse delay-1000 dark:neon-glow" />
-        <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-blue-300/20 dark:bg-blue-400/15 rounded-full blur-3xl animate-pulse delay-500 dark:neon-glow" />
-      </div>
+  // 3. Gastos (mensais e diários)
+  const gastos = await query<Gasto>(
+    "SELECT id, user_id, valor, descricao, categoria, data_gasto, tipo, created_at FROM gastos WHERE user_id = ? ORDER BY data_gasto DESC",
+    [user.id]
+  )
+
+  // 4. Poupança
+  const poupancas = await query<Poupanca>(
+    "SELECT id, user_id, valor, descricao, data_poupanca, created_at FROM poupanca WHERE user_id = ? ORDER BY data_poupanca DESC",
+    [user.id]
+  )
+
+  // 5. Valores e Pagamentos das Parcelas
+  const parcelasValores = await query(
+    "SELECT pv.divida_id, pv.numero_parcela, pv.valor FROM parcelas_valores pv JOIN dividas d ON d.id = pv.divida_id WHERE d.user_id = ?",
+    [user.id]
+  )
+
+  const parcelasPagamentos = await query(
+    "SELECT pp.divida_id, pp.numero_parcela, pp.valor_pago FROM parcelas_pagamentos pp JOIN dividas d ON d.id = pp.divida_id WHERE d.user_id = ?",
+    [user.id]
+  )
+
+  return (
+    <div className="relative min-h-screen">
+      {/* Subtle clean background */}
+      <div className="fixed inset-0 bg-slate-50 dark:bg-slate-950 -z-10" />
 
       <DashboardHeaderShell email={user.email ?? null} />
 
       <main className="relative">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <div className="mb-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-pink-600 dark:from-blue-400 dark:to-blue-500 bg-clip-text text-transparent">
-              Dashboard
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3 text-slate-900 dark:text-white tracking-tight">
+              Dashboard Financeiro
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 text-lg">Gerencie suas dívidas e acompanhe os pagamentos</p>
+            <p className="text-gray-600 dark:text-gray-300 text-lg">Controle suas receitas, despesas, parcelamentos e poupança</p>
           </div>
 
-          <DividasStatsClient dividas={dividasComBoolean || []} />
-          <DividasList dividas={dividasComBoolean || []} />
+          <DashboardContainer
+            dividas={dividasComBoolean || []}
+            receitas={receitas || []}
+            gastos={gastos || []}
+            poupancas={poupancas || []}
+            parcelasValores={parcelasValores || []}
+            parcelasPagamentos={parcelasPagamentos || []}
+            userEmail={user.email}
+          />
         </div>
       </main>
 

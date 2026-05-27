@@ -143,11 +143,13 @@ export function DividaCard({ divida, onEdit, onSuccess }: DividaCardProps) {
   const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s)
 
   const dataFaturaDate = parseToDate(divida.data_fatura)
-  const dataPrimeiraParcela = dataFaturaDate
+  const dataPrimeiraParcela = parseToDate(divida.data_inicio) || dataFaturaDate
   const dataUltimaParcela =
-    dataFaturaDate && divida.total_parcelas > 0 ? addMonths(dataFaturaDate, divida.total_parcelas - 1) : null
+    parseToDate(divida.data_fim) ||
+    (dataFaturaDate && divida.total_parcelas > 0 ? addMonths(dataFaturaDate, divida.total_parcelas - 1) : null)
+  const dataProximaBase = parseToDate(divida.data_inicio) || dataFaturaDate
   const dataProximaParcela =
-    dataFaturaDate && parcelasPagas < divida.total_parcelas ? addMonths(dataFaturaDate, parcelasPagas) : null
+    dataProximaBase && parcelasPagas < divida.total_parcelas ? addMonths(dataProximaBase, parcelasPagas) : null
 
   const mesProximaParcela = dataProximaParcela
     ? capitalize(dataProximaParcela.toLocaleDateString("pt-BR", { month: "long" }))
@@ -274,6 +276,12 @@ export function DividaCard({ divida, onEdit, onSuccess }: DividaCardProps) {
             <Calendar className="h-4 w-4" />
             <span>Fatura: {formatDate(divida.data_fatura)}</span>
           </div>
+          {divida.data_fechamento && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4 text-red-500/80" />
+              <span>Fechamento: {formatDate(divida.data_fechamento)}</span>
+            </div>
+          )}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
             <span>1ª parcela: {formatDate(dataPrimeiraParcela)}</span>
@@ -321,7 +329,7 @@ export function DividaCard({ divida, onEdit, onSuccess }: DividaCardProps) {
       <CardFooter className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
         <Button
           size="sm"
-          className="w-full sm:flex-1 min-w-0 bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow-lg transition-all hover:from-blue-600 hover:to-pink-600 disabled:opacity-60"
+          className="w-full sm:flex-1 min-w-0 bg-primary hover:opacity-95 text-primary-foreground transition-all disabled:opacity-60"
           onClick={(e) => {
             e.stopPropagation()
             handlePayNext()

@@ -48,6 +48,10 @@ export async function initializeDatabase() {
           total_parcelas INT NOT NULL CHECK (total_parcelas > 0),
           parcelas_pagas INT NOT NULL DEFAULT 0 CHECK (parcelas_pagas >= 0),
           valor_parcela DECIMAL(10, 2) NOT NULL CHECK (valor_parcela > 0),
+          valor_variavel BOOLEAN NOT NULL DEFAULT FALSE,
+          data_fechamento DATE DEFAULT NULL,
+          data_inicio DATE DEFAULT NULL,
+          data_fim DATE DEFAULT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -76,6 +80,35 @@ export async function initializeDatabase() {
         }
       } catch (error) {
         console.warn("⚠️ Erro ao verificar/adicionar coluna valor_variavel:", error)
+      }
+
+      // Migração: Adicionar colunas data_fechamento, data_inicio e data_fim se não existirem
+      try {
+        const checkColumnExists = async (colName: string) => {
+          const [cols] = await connection.execute(`
+            SELECT COLUMN_NAME 
+            FROM INFORMATION_SCHEMA.COLUMNS 
+            WHERE TABLE_SCHEMA = DATABASE() 
+            AND TABLE_NAME = 'dividas' 
+            AND COLUMN_NAME = ?
+          `, [colName])
+          return Array.isArray(cols) && cols.length > 0
+        }
+
+        if (!(await checkColumnExists("data_fechamento"))) {
+          await connection.execute(`ALTER TABLE dividas ADD COLUMN data_fechamento DATE DEFAULT NULL`)
+          console.log("✅ Coluna data_fechamento adicionada à tabela dividas")
+        }
+        if (!(await checkColumnExists("data_inicio"))) {
+          await connection.execute(`ALTER TABLE dividas ADD COLUMN data_inicio DATE DEFAULT NULL`)
+          console.log("✅ Coluna data_inicio adicionada à tabela dividas")
+        }
+        if (!(await checkColumnExists("data_fim"))) {
+          await connection.execute(`ALTER TABLE dividas ADD COLUMN data_fim DATE DEFAULT NULL`)
+          console.log("✅ Coluna data_fim adicionada à tabela dividas")
+        }
+      } catch (error) {
+        console.warn("⚠️ Erro ao verificar/adicionar novas colunas de datas em dividas:", error)
       }
 
       // Criar tabela de valores individuais das parcelas (para dívidas com valor variável)
@@ -114,6 +147,54 @@ export async function initializeDatabase() {
       `)
 
       console.log("✅ Tabelas do banco de dados inicializadas com sucesso")
+
+      // Criar tabela de receitas
+      await connection.execute(`
+        CREATE TABLE IF NOT EXISTS receitas (
+          id VARCHAR(36) PRIMARY KEY,
+          user_id VARCHAR(36) NOT NULL,
+          valor DECIMAL(10, 2) NOT NULL CHECK (valor >= 0),
+          descricao VARCHAR(255) NOT NULL,
+          data_receita DATE NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          INDEX idx_receitas_user (user_id),
+          INDEX idx_receitas_data (data_receita)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+      `)
+
+      // Criar tabela de gastos
+      await connection.execute(`
+        CREATE TABLE IF NOT EXISTS gastos (
+          id VARCHAR(36) PRIMARY KEY,
+          user_id VARCHAR(36) NOT NULL,
+          valor DECIMAL(10, 2) NOT NULL CHECK (valor >= 0),
+          descricao VARCHAR(255) NOT NULL,
+          categoria VARCHAR(100) NOT NULL,
+          data_gasto DATE NOT NULL,
+          tipo VARCHAR(20) NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          INDEX idx_gastos_user (user_id),
+          INDEX idx_gastos_data (data_gasto),
+          INDEX idx_gastos_tipo (tipo)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+      `)
+
+      // Criar tabela de poupanca
+      await connection.execute(`
+        CREATE TABLE IF NOT EXISTS poupanca (
+          id VARCHAR(36) PRIMARY KEY,
+          user_id VARCHAR(36) NOT NULL,
+          valor DECIMAL(10, 2) NOT NULL CHECK (valor >= 0),
+          descricao VARCHAR(255) NOT NULL,
+          data_poupanca DATE NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          INDEX idx_poupanca_user (user_id),
+          INDEX idx_poupanca_data (data_poupanca)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+      `)
       initialized = true
     } finally {
       connection.release()
