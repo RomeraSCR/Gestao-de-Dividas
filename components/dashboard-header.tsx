@@ -110,15 +110,14 @@ export function DashboardHeader({ email }: DashboardHeaderProps) {
         <div className="flex items-center gap-1 sm:gap-3 min-w-0 flex-1">
           <Image
             src="/logo_circular.png"
-            alt="Brasil Dívidas"
+            alt="FinanzLivre Logo"
             width={44}
             height={44}
-            className="h-9 w-9 sm:h-10 sm:w-10 rounded-full shadow-lg dark:neon-glow shrink-0"
+            className="h-9 w-9 sm:h-10 sm:w-10 rounded-full shadow-sm shrink-0"
             priority
           />
-          <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-pink-600 dark:from-blue-400 dark:to-blue-500 bg-clip-text text-transparent leading-tight">
-            <span className="block sm:inline">Gestão</span>{" "}
-            <span className="block sm:inline">de Dívidas</span>
+          <span className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white leading-tight">
+            Finanz<span className="text-emerald-600 dark:text-emerald-400 font-black">Livre</span>
           </span>
         </div>
 
@@ -127,17 +126,17 @@ export function DashboardHeader({ email }: DashboardHeaderProps) {
           <ThemeToggle />
           <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/50 transition-all duration-300">
-              <div className="p-2 rounded-full bg-gradient-to-br from-blue-500 to-pink-500">
-                <User className="h-4 w-4 text-white" />
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300">
+              <div className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                <User className="h-4 w-4" />
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="backdrop-blur-xl bg-white/90 dark:bg-slate-900/90 border-white/20 dark:border-blue-500/30">
+          <DropdownMenuContent align="end" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <DropdownMenuLabel>
               <div className="flex flex-col gap-1">
-                <p className="text-sm font-medium dark:text-gray-200">Minha Conta</p>
-                {email && <p className="text-xs text-gray-600 dark:text-gray-400">{email}</p>}
+                <p className="text-sm font-semibold dark:text-gray-200">Minha Conta</p>
+                {email && <p className="text-xs text-gray-500 dark:text-gray-400">{email}</p>}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

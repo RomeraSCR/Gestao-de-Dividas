@@ -16,6 +16,9 @@ export interface Divida {
   parcelas_pagas: number
   valor_parcela: number
   valor_variavel: boolean
+  data_fechamento?: string | null
+  data_inicio?: string | null
+  data_fim?: string | null
   created_at: string
   updated_at: string
 }
@@ -29,4 +32,36 @@ export interface DividaFormData {
   parcelas_pagas: number
   valor_parcela: number
   valor_variavel: boolean
+  data_fechamento?: string | null
+  data_inicio?: string | null
+  data_fim?: string | null
+}
+
+export interface Receita {
+  id: string
+  user_id: string
+  valor: number
+  descricao: string
+  data_receita: string
+  created_at: string
+}
+
+export interface Gasto {
+  id: string
+  user_id: string
+  valor: number
+  descricao: string
+  categoria: string
+  data_gasto: string
+  tipo: "mensal" | "diario"
+  created_at: string
+}
+
+export interface Poupanca {
+  id: string
+  user_id: string
+  valor: number
+  descricao: string
+  data_poupanca: string
+  created_at: string
 }

@@ -17,8 +17,8 @@ export async function createDivida(formData: DividaFormData) {
   try {
     const dividaId = randomUUID()
     await query(
-      `INSERT INTO dividas (id, user_id, autor, produto, loja, data_fatura, total_parcelas, parcelas_pagas, valor_parcela, valor_variavel)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO dividas (id, user_id, autor, produto, loja, data_fatura, total_parcelas, parcelas_pagas, valor_parcela, valor_variavel, data_fechamento, data_inicio, data_fim)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         dividaId,
         user.id,
@@ -30,6 +30,9 @@ export async function createDivida(formData: DividaFormData) {
         formData.parcelas_pagas || 0,
         formData.valor_parcela,
         formData.valor_variavel || false,
+        formData.data_fechamento || null,
+        formData.data_inicio || null,
+        formData.data_fim || null,
       ]
     )
     
@@ -76,7 +79,7 @@ export async function updateDivida(id: string, formData: DividaFormData) {
 
     await query(
       `UPDATE dividas 
-       SET autor = ?, produto = ?, loja = ?, data_fatura = ?, total_parcelas = ?, parcelas_pagas = ?, valor_parcela = ?, valor_variavel = ?
+       SET autor = ?, produto = ?, loja = ?, data_fatura = ?, total_parcelas = ?, parcelas_pagas = ?, valor_parcela = ?, valor_variavel = ?, data_fechamento = ?, data_inicio = ?, data_fim = ?
        WHERE id = ?`,
       [
         formData.autor,
@@ -87,6 +90,9 @@ export async function updateDivida(id: string, formData: DividaFormData) {
         formData.parcelas_pagas,
         formData.valor_parcela,
         formData.valor_variavel || false,
+        formData.data_fechamento || null,
+        formData.data_inicio || null,
+        formData.data_fim || null,
         id,
       ]
     )
@@ -364,5 +370,113 @@ export async function payNextParcelaWithComprovante(formData: FormData) {
   } catch (error) {
     console.error("[Dashboard] Erro ao pagar parcela (com comprovante):", error)
     return { error: "Erro ao pagar parcela" }
+  }
+}
+
+export async function createReceita(formData: { valor: number; descricao: string; data_receita: string }) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    const id = randomUUID()
+    await query(
+      `INSERT INTO receitas (id, user_id, valor, descricao, data_receita) VALUES (?, ?, ?, ?, ?)`,
+      [id, user.id, formData.valor, formData.descricao, formData.data_receita]
+    )
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao criar receita:", error)
+    return { error: "Erro ao criar receita" }
+  }
+}
+
+export async function deleteReceita(id: string) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    await query("DELETE FROM receitas WHERE id = ?", [id])
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao deletar receita:", error)
+    return { error: "Erro ao deletar receita" }
+  }
+}
+
+export async function createGasto(formData: { valor: number; descricao: string; categoria: string; data_gasto: string; tipo: "mensal" | "diario" }) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    const id = randomUUID()
+    await query(
+      `INSERT INTO gastos (id, user_id, valor, descricao, categoria, data_gasto, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [id, user.id, formData.valor, formData.descricao, formData.categoria, formData.data_gasto, formData.tipo]
+    )
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao criar gasto:", error)
+    return { error: "Erro ao criar gasto" }
+  }
+}
+
+export async function deleteGasto(id: string) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    await query("DELETE FROM gastos WHERE id = ?", [id])
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao deletar gasto:", error)
+    return { error: "Erro ao deletar gasto" }
+  }
+}
+
+export async function createPoupanca(formData: { valor: number; descricao: string; data_poupanca: string }) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    const id = randomUUID()
+    await query(
+      `INSERT INTO poupanca (id, user_id, valor, descricao, data_poupanca) VALUES (?, ?, ?, ?, ?)`,
+      [id, user.id, formData.valor, formData.descricao, formData.data_poupanca]
+    )
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao criar poupança:", error)
+    return { error: "Erro ao criar poupança" }
+  }
+}
+
+export async function deletePoupanca(id: string) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    await query("DELETE FROM poupanca WHERE id = ?", [id])
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao deletar poupança:", error)
+    return { error: "Erro ao deletar poupança" }
   }
 }

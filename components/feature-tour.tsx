@@ -223,7 +223,7 @@ export function FeatureTour({ active, onComplete }: FeatureTourProps) {
         style={getTooltipStyle()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-pink-500 px-4 py-3 text-white">
+        <div className="bg-primary px-4 py-3 text-primary-foreground">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium opacity-80">
               {currentStep + 1} de {tourSteps.length}
@@ -231,7 +231,7 @@ export function FeatureTour({ active, onComplete }: FeatureTourProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-white/80 hover:text-white hover:bg-white/20 rounded-full"
+              className="h-6 w-6 text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/10 rounded-full"
               onClick={handleComplete}
             >
               <X className="h-4 w-4" />
@@ -263,7 +263,7 @@ export function FeatureTour({ active, onComplete }: FeatureTourProps) {
           <Button
             size="sm"
             onClick={handleNext}
-            className="flex-1 h-9 bg-gradient-to-r from-blue-500 to-pink-500 text-white hover:from-blue-600 hover:to-pink-600"
+            className="flex-1 h-9 bg-primary text-primary-foreground"
           >
             {isLastStep ? "Concluir" : "Próximo"}
             {!isLastStep && <ChevronRight className="h-4 w-4 ml-1" />}
@@ -277,10 +277,10 @@ export function FeatureTour({ active, onComplete }: FeatureTourProps) {
               key={index}
               className={`h-1.5 rounded-full transition-all ${
                 index === currentStep
-                  ? "w-5 bg-gradient-to-r from-blue-500 to-pink-500"
+                  ? "w-5 bg-primary"
                   : index < currentStep
-                  ? "w-1.5 bg-blue-400"
-                  : "w-1.5 bg-slate-300 dark:bg-slate-600"
+                  ? "w-1.5 bg-slate-400 dark:bg-slate-500"
+                  : "w-1.5 bg-slate-300 dark:bg-slate-650"
               }`}
             />
           ))}

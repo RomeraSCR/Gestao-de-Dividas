@@ -170,10 +170,10 @@ export function HistoricoParcelasDialog({
         showCloseButton={false}
       >
         {/* Header fixo */}
-        <div className="p-6 pb-4 border-b bg-gradient-to-r from-blue-50 to-pink-50 dark:from-slate-900 dark:to-slate-800">
+        <div className="p-6 pb-4 border-b bg-slate-50 dark:bg-slate-900/40">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-xl font-bold text-slate-800 dark:text-white">
+              <DialogTitle className="text-xl font-bold text-slate-850 dark:text-white">
                 Histórico de Parcelas
               </DialogTitle>
               <DialogDescription className="mt-1 text-sm truncate">
@@ -197,13 +197,13 @@ export function HistoricoParcelasDialog({
                 <span className="text-muted-foreground">Total:</span>
                 <span className="font-semibold">{data.total_parcelas}</span>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-sm">
-                <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <span className="font-semibold text-green-700 dark:text-green-300">{pagas.length} pagas</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900 text-sm">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-450" />
+                <span className="font-semibold text-emerald-700 dark:text-emerald-350">{pagas.length} pagas</span>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-sm">
-                <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                <span className="font-semibold text-amber-700 dark:text-amber-300">{pendentes.length} pendentes</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900 text-sm">
+                <Clock className="h-4 w-4 text-amber-600 dark:text-amber-450" />
+                <span className="font-semibold text-amber-700 dark:text-amber-350">{pendentes.length} pendentes</span>
               </div>
             </div>
           )}
@@ -246,7 +246,7 @@ export function HistoricoParcelasDialog({
                         <div className={`
                           flex items-center justify-center w-10 h-10 rounded-full shrink-0 text-sm font-bold
                           ${isPaga 
-                            ? "bg-green-500 text-white" 
+                            ? "bg-emerald-500 text-white" 
                             : "bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-200"
                           }
                         `}>
@@ -256,13 +256,13 @@ export function HistoricoParcelasDialog({
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-base">{formatCurrency(p.valor)}</span>
                             {isPaga && (
-                              <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+                              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-450" />
                             )}
                           </div>
                           <div className="text-xs text-muted-foreground mt-0.5">
                             Venc.: {formatDateBR(p.due_date)}
                             {p.pagamento?.data_pagamento && (
-                              <span className="text-green-600 dark:text-green-400"> • Pago em {formatDateBR(p.pagamento.data_pagamento)}</span>
+                              <span className="text-emerald-600 dark:text-emerald-450"> • Pago em {formatDateBR(p.pagamento.data_pagamento)}</span>
                             )}
                           </div>
                         </div>
@@ -389,7 +389,7 @@ export function HistoricoParcelasDialog({
               type="button" 
               onClick={handleUploadComprovante}
               disabled={isUploading || !uploadFile}
-              className="bg-gradient-to-r from-blue-500 to-pink-500 text-white hover:from-blue-600 hover:to-pink-600"
+              className="bg-primary hover:opacity-95 text-primary-foreground"
             >
               {isUploading ? "Enviando..." : "Salvar"}
             </Button>

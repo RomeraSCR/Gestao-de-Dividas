@@ -67,7 +67,7 @@ export function MesDetalhesDialog({
     const result: ParcelaMes[] = []
 
     for (const divida of dividas) {
-      const fatura = parseToDate(divida.data_fatura)
+      const fatura = parseToDate(divida.data_inicio) || parseToDate(divida.data_fatura)
       if (!fatura) continue
 
       const totalParcelas = Number(divida.total_parcelas) || 0
@@ -122,11 +122,11 @@ export function MesDetalhesDialog({
         showCloseButton={false}
       >
         {/* Header fixo */}
-        <div className="p-6 pb-4 border-b bg-gradient-to-r from-blue-50 to-pink-50 dark:from-slate-900 dark:to-slate-800">
+        <div className="p-6 pb-4 border-b bg-slate-50 dark:bg-slate-900/40">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                <CalendarDays className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <DialogTitle className="text-xl font-bold text-slate-850 dark:text-white flex items-center gap-2">
+                <CalendarDays className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 {mesLabel}
               </DialogTitle>
               <DialogDescription className="mt-1 text-sm">
@@ -147,15 +147,15 @@ export function MesDetalhesDialog({
           <div className="flex flex-wrap items-center gap-2 mt-4">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/70 dark:bg-slate-800 border text-sm">
               <span className="text-muted-foreground">Total:</span>
-              <span className="font-bold text-blue-700 dark:text-blue-300">{formatCurrency(totalMes)}</span>
+              <span className="font-bold text-slate-900 dark:text-slate-100">{formatCurrency(totalMes)}</span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-sm">
-              <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-              <span className="font-semibold text-green-700 dark:text-green-300">{totalPagas} pagas</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900 text-sm">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-450" />
+              <span className="font-semibold text-emerald-700 dark:text-emerald-350">{totalPagas} pagas</span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-sm">
-              <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-              <span className="font-semibold text-amber-700 dark:text-amber-300">{totalPendentes} pendentes</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900 text-sm">
+              <Clock className="h-4 w-4 text-amber-600 dark:text-amber-450" />
+              <span className="font-semibold text-amber-700 dark:text-amber-350">{totalPendentes} pendentes</span>
             </div>
           </div>
         </div>
@@ -189,8 +189,8 @@ export function MesDetalhesDialog({
                           className={`
                           flex items-center justify-center w-10 h-10 rounded-full shrink-0 text-sm font-bold
                           ${isPaga
-                            ? "bg-green-500 text-white"
-                            : "bg-gradient-to-br from-blue-500 to-pink-500 text-white"
+                            ? "bg-emerald-500 text-white"
+                            : "bg-primary text-primary-foreground"
                           }
                         `}
                         >

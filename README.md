@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="public/logo_circular.png" alt="Gestão de Dívidas" width="120" height="120" style="border-radius: 50%;">
+  <img src="public/logo_circular.png" alt="FinanzLivre" width="120" height="120" style="border-radius: 50%;">
 </p>
 
-<h1 align="center">💳 Gestão de Dívidas Pessoais</h1>
+<h1 align="center">💰 FinanzLivre - Gestão Financeira Pessoal</h1>
 
 <p align="center">
-  <strong>Controle total das suas compras parceladas</strong>
+  <strong>Controle total das suas finanças pessoais de forma 100% gratuita</strong>
 </p>
 
 <p align="center">
@@ -47,13 +47,14 @@
 
 ## 📖 Sobre o Projeto
 
-**Gestão de Dívidas** é uma aplicação web moderna para gerenciar compras parceladas de forma simples e visual. Saiba exatamente quanto você deve, quanto já pagou e quanto vai pagar em cada mês.
+**FinanzLivre** é uma aplicação web moderna de gestão financeira pessoal e controle de gastos **100% gratuita**. Ela permite consolidar suas receitas, poupanças, despesas diárias, contas mensais e compras parceladas em um único lugar, sem a complexidade de planilhas.
 
 ### Por que usar?
 
-- 🎯 **Sem planilhas** — Interface intuitiva para cadastrar e acompanhar parcelas
-- 📊 **Visão mensal** — Veja o total a pagar mês a mês
-- 📎 **Comprovantes** — Anexe comprovantes de pagamento
+- 🎯 **Sem planilhas** — Interface intuitiva para controle de receitas, gastos e metas
+- 📊 **Visão de Saldo Real** — Saiba exatamente quanto sobrou no fim do mês
+- 📈 **Metas e Poupança** — Organize quanto quer guardar e investir
+- 💳 **Compras Parceladas** — Controle suas parcelas e histórico de pagamentos
 - 📱 **PWA** — Instale no celular como um app nativo
 - 🌙 **Dark Mode** — Interface elegante em modo claro ou escuro
 

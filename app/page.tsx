@@ -41,14 +41,14 @@ export default function HomePage() {
           <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
             <Image
               src="/logo_circular.png"
-              alt="Brasil Dívidas"
+              alt="FinanzLivre Logo"
               width={40}
               height={40}
               className="h-8 w-8 sm:h-10 sm:w-10 rounded-full shadow-lg dark:neon-glow shrink-0"
               priority
             />
             <span className="bg-gradient-to-r from-blue-600 to-pink-600 dark:from-blue-400 dark:to-blue-500 bg-clip-text text-lg sm:text-xl font-bold text-transparent leading-tight">
-              Gestão <span className="block sm:inline">de Dívidas</span>
+              Finanz<span className="text-emerald-500 font-extrabold">Livre</span>
             </span>
           </div>
           <nav className="hidden lg:flex items-center gap-6 text-sm text-gray-700 dark:text-gray-300">
@@ -95,15 +95,14 @@ export default function HomePage() {
 
             <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl lg:text-6xl">
               Organize suas{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-pink-600 dark:from-blue-400 dark:to-blue-500 bg-clip-text text-transparent">
-                dívidas
+              <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
+                finanças pessoais
               </span>{" "}
-              e saiba quanto vai pagar em cada mês.
+              de forma <span className="underline decoration-pink-500">100% gratuita</span>.
             </h1>
 
             <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-gray-700 dark:text-gray-300 sm:text-lg">
-              Cadastre compras, acompanhe parcelas e pague com um clique — com opção de anexar comprovante. Veja
-              total a pagar por mês e nunca mais perca o controle.
+              Controle suas receitas, poupança, despesas diárias, contas mensais e compras parceladas em um único painel. Sem planilhas e 100% grátis.
             </p>
 
             <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
@@ -451,16 +450,16 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             <Image
               src="/logo_circular.png"
-              alt="Brasil Dívidas"
+              alt="FinanzLivre Logo"
               width={20}
               height={20}
               className="h-5 w-5 rounded-full"
             />
             <span className="bg-gradient-to-r from-blue-600 to-pink-600 dark:from-blue-400 dark:to-blue-500 bg-clip-text font-semibold text-transparent">
-              Gestão de Dívidas
+              FinanzLivre
             </span>
           </div>
-          <p>Gerenciamento inteligente de dívidas e compras parceladas</p>
+          <p>Gestão financeira pessoal e controle de despesas 100% gratuito</p>
         </div>
       </footer>
     </div>
