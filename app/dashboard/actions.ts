@@ -480,3 +480,60 @@ export async function deletePoupanca(id: string) {
     return { error: "Erro ao deletar poupança" }
   }
 }
+
+export async function updateReceita(id: string, formData: { valor: number; descricao: string; data_receita: string }) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    await query(
+      "UPDATE receitas SET valor = ?, descricao = ?, data_receita = ? WHERE id = ? AND user_id = ?",
+      [formData.valor, formData.descricao, formData.data_receita, id, user.id]
+    )
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao atualizar receita:", error)
+    return { error: "Erro ao atualizar receita" }
+  }
+}
+
+export async function updateGasto(id: string, formData: { valor: number; descricao: string; categoria: string; data_gasto: string; tipo: "mensal" | "diario" }) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    await query(
+      "UPDATE gastos SET valor = ?, descricao = ?, categoria = ?, data_gasto = ?, tipo = ? WHERE id = ? AND user_id = ?",
+      [formData.valor, formData.descricao, formData.categoria, formData.data_gasto, formData.tipo, id, user.id]
+    )
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao atualizar gasto:", error)
+    return { error: "Erro ao atualizar gasto" }
+  }
+}
+
+export async function updatePoupanca(id: string, formData: { valor: number; descricao: string; data_poupanca: string }) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  try {
+    await query(
+      "UPDATE poupanca SET valor = ?, descricao = ?, data_poupanca = ? WHERE id = ? AND user_id = ?",
+      [formData.valor, formData.descricao, formData.data_poupanca, id, user.id]
+    )
+    revalidatePath("/dashboard", "layout")
+    return { success: true }
+  } catch (error) {
+    console.error("[Dashboard] Erro ao atualizar poupança:", error)
+    return { error: "Erro ao atualizar poupança" }
+  }
+}

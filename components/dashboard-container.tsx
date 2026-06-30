@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation"
 import type { Divida, Receita, Gasto, Poupanca } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { CurrencyInput } from "@/components/ui/currency-input"
+import { AppSidebar } from "@/components/app-sidebar"
+import { SidebarTrigger } from "@/components/ui/sidebar"
+import { DashboardHeaderShell } from "@/components/dashboard-header-shell"
+import { DashboardUpdates } from "@/components/dashboard-updates"
+import { ItemEditDialog } from "@/components/item-edit-dialog"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -39,7 +45,7 @@ import {
   FileDown,
   BookOpen,
   FileSpreadsheet
-} from "lucide-react"
+, Edit , Edit } from "lucide-react"
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts"
 import { generateMonthlyPDF, generateConsolidatedPDF } from "@/lib/pdf-generator"
 import { exportReceitasCSV, exportGastosCSV, exportDividasCSV } from "@/lib/csv-generator"
@@ -95,6 +101,8 @@ export function DashboardContainer({
   const [activeTab, setActiveTab] = useState<"resumo" | "dividas" | "controle" | "diarios" | "poupanca" | "relatorios">("resumo")
   const [isPending, startTransition] = useTransition()
   const [mounted, setMounted] = useState(false)
+  const [editingItem, setEditingItem] = useState<any>(null)
+  const [editingType, setEditingType] = useState<"receita" | "gasto" | "poupanca">("receita")
   const [showFaturasMes, setShowFaturasMes] = useState(false)
   const router = useRouter()
 
@@ -242,7 +250,8 @@ export function DashboardContainer({
   
   const handleAddReceita = async (e: React.FormEvent) => {
     e.preventDefault()
-    const valor = parseFloat(recVal.replace(",", "."))
+    const cleanVal = recVal.replace(/\./g, "").replace(",", ".")
+    const valor = parseFloat(cleanVal)
     if (isNaN(valor) || valor <= 0 || !recDesc) return
 
     startTransition(async () => {
@@ -273,7 +282,8 @@ export function DashboardContainer({
 
   const handleAddGasto = async (e: React.FormEvent, tipo: "mensal" | "diario") => {
     e.preventDefault()
-    const valor = parseFloat(gasVal.replace(",", "."))
+    const cleanVal = gasVal.replace(/\./g, "").replace(",", ".")
+    const valor = parseFloat(cleanVal)
     if (isNaN(valor) || valor <= 0 || !gasDesc) return
 
     startTransition(async () => {
@@ -306,7 +316,8 @@ export function DashboardContainer({
 
   const handleAddPoupanca = async (e: React.FormEvent) => {
     e.preventDefault()
-    const valor = parseFloat(pouVal.replace(",", "."))
+    const cleanVal = pouVal.replace(/\./g, "").replace(",", ".")
+    const valor = parseFloat(cleanVal)
     if (isNaN(valor) || valor <= 0 || !pouDesc) return
 
     startTransition(async () => {
@@ -336,7 +347,21 @@ export function DashboardContainer({
   }
 
   return (
-    <div className="w-full">
+    <>
+      <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950 flex flex-col relative w-full h-screen">
+        <DashboardHeaderShell email={userEmail ?? null} />
+        <main className="container mx-auto px-4 py-8 max-w-7xl flex-1">
+          <div className="mb-8 flex items-center gap-4">
+            <SidebarTrigger className="md:hidden" />
+            <div>
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-3 text-slate-900 dark:text-white tracking-tight">
+                Dashboard Financeiro
+              </h1>
+              <p className="text-gray-600 dark:text-gray-300 text-lg">Controle suas receitas, despesas, parcelamentos e poupança</p>
+            </div>
+          </div>
+          <div className="w-full">
       {/* SELETOR DE MÊS E MENU DE ABAS */}
       <div className="flex flex-col gap-6 mb-8 bg-card border border-border p-5 rounded-lg shadow-sm">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -811,13 +836,12 @@ export function DashboardContainer({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="recVal">Valor (R$)</Label>
-                      <Input
+                      <CurrencyInput
                         id="recVal"
                         required
-                        type="text"
                         placeholder="0,00"
                         value={recVal}
-                        onChange={e => setRecVal(e.target.value)}
+                        onChange={setRecVal}
                       />
                     </div>
                     <div className="grid gap-2">
@@ -859,7 +883,8 @@ export function DashboardContainer({
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-emerald-600">{formatCurrency(r.valor)}</span>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteReceita(r.id)}>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(r); setEditingType("receita"); }}><Edit className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(r); setEditingType("receita"); }}><Edit className="h-4 w-4" /></Button>\n                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteReceita(r.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -896,13 +921,12 @@ export function DashboardContainer({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="gasVal">Valor (R$)</Label>
-                      <Input
+                      <CurrencyInput
                         id="gasVal"
                         required
-                        type="text"
                         placeholder="0,00"
                         value={gasVal}
-                        onChange={e => setGasVal(e.target.value)}
+                        onChange={setGasVal}
                       />
                     </div>
                     <div className="grid gap-2">
@@ -944,7 +968,8 @@ export function DashboardContainer({
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-red-500">{formatCurrency(g.valor)}</span>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteGasto(g.id)}>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(g); setEditingType("gasto"); }}><Edit className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(g); setEditingType("gasto"); }}><Edit className="h-4 w-4" /></Button>\n                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteGasto(g.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -986,14 +1011,13 @@ export function DashboardContainer({
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="gasVal">Valor (R$)</Label>
-                    <Input
-                      id="gasVal"
+                    <Label htmlFor="gasDiaVal">Valor (R$)</Label>
+                    <CurrencyInput
+                      id="gasDiaVal"
                       required
-                      type="text"
                       placeholder="0,00"
                       value={gasVal}
-                      onChange={e => setGasVal(e.target.value)}
+                      onChange={setGasVal}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -1124,13 +1148,12 @@ export function DashboardContainer({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="pouVal">Valor a Guardar (R$)</Label>
-                    <Input
+                    <CurrencyInput
                       id="pouVal"
                       required
-                      type="text"
                       placeholder="0,00"
                       value={pouVal}
-                      onChange={e => setPouVal(e.target.value)}
+                      onChange={setPouVal}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -1182,6 +1205,154 @@ export function DashboardContainer({
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-teal-600">{formatCurrency(p.valor)}</span>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(p); setEditingType("poupanca"); }}><Edit className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(p); setEditingType("poupanca"); }}><Edit className="h-4 w-4" /></Button>\n                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeletePoupanca(p.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* 6. ABA RELATÓRIOS                                        */}
+      {/* ======================================================== */}
+      {activeTab === "relatorios" && (
+        <div className="space-y-6 animate-fade-in">
+          {/* Overview Info Card */}
+          <Card className="glass-card shadow border-slate-200 dark:border-slate-800 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 dark:from-indigo-950/20 dark:to-purple-950/20">
+            <CardHeader>
+              <CardTitle className="text-xl font-bold flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                <FileText className="h-5 w-5" />
+                Centro de Relatórios & Exportações
+              </CardTitle>
+              <CardDescription className="text-slate-600 dark:text-slate-300">
+                Gere documentos detalhados de suas finanças em formatos portáteis (PDF) para impressão/arquivamento ou exporte dados em planilhas (CSV) para manipular em outros softwares.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+              <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+                <p className="text-xs text-muted-foreground font-medium uppercase">Receitas no Período</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{formatCurrency(totalReceitas)}</p>
+              </div>
+              <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+                <p className="text-xs text-muted-foreground font-medium uppercase">Despesas no Período</p>
+                <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{formatCurrency(totalSaidas)}</p>
+              </div>
+              <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+                <p className="text-xs text-muted-foreground font-medium uppercase">Total Guardado (Poupança)</p>
+                <p className="text-2xl font-bold text-teal-600 dark:text-teal-400 mt-1">{formatCurrency(totalPoupancas)}</p>
+              </div>
+              <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+                <p className="text-xs text-muted-foreground font-medium uppercase">Saldo Líquido</p>
+                <p className={`text-2xl font-bold mt-1 ${saldoFinal >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+                  {formatCurrency(saldoFinal)}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Export Options Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Relatório Mensal PDF Card */}
+            <Card className="glass-card shadow border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+              <CardHeader>
+                <div className="h-10 w-10 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2">
+                  <FileDown className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-lg">Relatório Mensal em PDF</CardTitle>
+                <CardDescription>
+                  Gera um extrato financeiro formal contendo todas as receitas, despesas fixas, gastos diários e faturas de parcelamentos do mês de <strong>{getMonthName(selectedMonth)}</strong>.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <Button 
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => generateMonthlyPDF(
+                    receitas, 
+                    gastos, 
+                    dividas, 
+                    poupancas, 
+                    parcelasValores, 
+                    parcelasPagamentos, 
+                    selectedMonth, 
+                    userEmail || "usuario@finanzlivre.com"
+                  )}
+                >
+                  <FileDown className="h-4 w-4" />
+                  Baixar PDF Mensal
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Relatório Consolidado Geral PDF Card */}
+            <Card className="glass-card shadow border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+              <CardHeader>
+                <div className="h-10 w-10 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400 mb-2">
+                  <BookOpen className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-lg">Relatório Consolidado Geral</CardTitle>
+                <CardDescription>
+                  Gera um documento consolidado com o saldo geral acumulado de receitas/gastos, histórico de reservas de poupança e um <strong>balanço geral de todas as dívidas e parcelamentos ativos</strong>, detalhando o progresso de cada um.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <Button 
+                  className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => generateConsolidatedPDF(
+                    dividas, 
+                    receitas, 
+                    gastos, 
+                    poupancas, 
+                    userEmail || "usuario@finanzlivre.com"
+                  )}
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Baixar PDF Consolidado
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* CSV Planilhas Card */}
+            <Card className="glass-card shadow border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+              <CardHeader>
+                <div className="h-10 w-10 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-2">
+                  <FileSpreadsheet className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-lg">Planilhas (CSV/Excel)</CardTitle>
+                <CardDescription>
+                  Exporte seus dados financeiros brutos em formato compatível com Excel e Google Sheets. Os arquivos contam com codificação adequada para exibição acentuada em português.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0 space-y-2">
+                <Button 
+                  variant="outline" 
+                  className="w-full text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => exportReceitasCSV(receitas)}
+                >
+                  <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+                  Exportar Receitas (CSV)
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => exportGastosCSV(gastos)}
+                >
+                  <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+                  Exportar Despesas (CSV)
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => exportDividasCSV(dividas)}
+                >
+                  <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeletePoupanca(p.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -1336,6 +1507,17 @@ export function DashboardContainer({
           </div>
         </div>
       )}
-    </div>
+
+      <ItemEditDialog
+        open={!!editingItem}
+        onOpenChange={(open) => !open && setEditingItem(null)}
+        item={editingItem}
+        type={editingType}
+        onSuccess={() => { router.refresh(); }}
+      />
+        </main>
+        <DashboardUpdates />
+      </div>
+    </>
   )
 }

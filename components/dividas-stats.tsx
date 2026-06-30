@@ -164,6 +164,11 @@ export function DividasStats({ dividas }: DividasStatsProps) {
     }
   })()
 
+  // Calcular o valor do próximo mês (ou mês atual se houver faturas atrasadas)
+  const totalMesAtualText = mounted && mensal.items.length > 0 
+    ? formatCurrency(mensal.items[0].total) 
+    : formatCurrency(0)
+
   // Formatar dados para o gráfico de projeção
   const chartData = mensal.items.map((item, index) => {
     const monthName = capitalize(item.date.toLocaleDateString("pt-BR", { month: "short" })).replace(".", "")
@@ -180,7 +185,7 @@ export function DividasStats({ dividas }: DividasStatsProps) {
 
   return (
     <div className="mb-8 space-y-6">
-      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-5">
         <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2 min-w-0">
             <CardTitle className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">Total de Parcelamentos</CardTitle>
@@ -201,7 +206,25 @@ export function DividasStats({ dividas }: DividasStatsProps) {
 
         <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2 min-w-0">
-            <CardTitle className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">A Pagar</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">A Pagar (Mês)</CardTitle>
+            <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
+              <CalendarDays className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent className="overflow-hidden">
+            <div className={cn(
+              "font-extrabold text-amber-600 dark:text-amber-400 leading-none tracking-tight tabular-nums break-words overflow-hidden",
+              "text-sm sm:text-base md:text-lg lg:text-xl"
+            )}>
+              {totalMesAtualText}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words">Próximas faturas</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card border border-border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 gap-2 min-w-0">
+            <CardTitle className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">A Pagar (Total)</CardTitle>
             <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
               <TrendingUp className="h-4 w-4" />
             </div>
