@@ -1,9 +1,9 @@
 "use client"
 
 import React from 'react';
-import { Input, InputProps } from './input';
+import { Input } from './input';
 
-interface CurrencyInputProps extends Omit<InputProps, 'onChange' | 'value'> {
+interface CurrencyInputProps extends Omit<React.ComponentProps<typeof Input>, 'onChange' | 'value'> {
   value: string;
   onChange: (value: string) => void;
 }

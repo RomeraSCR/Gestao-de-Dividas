@@ -44,8 +44,9 @@ import {
   FileText,
   FileDown,
   BookOpen,
-  FileSpreadsheet
-, Edit , Edit } from "lucide-react"
+  FileSpreadsheet,
+  Edit,
+} from "lucide-react"
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts"
 import { generateMonthlyPDF, generateConsolidatedPDF } from "@/lib/pdf-generator"
 import { exportReceitasCSV, exportGastosCSV, exportDividasCSV } from "@/lib/csv-generator"
@@ -1206,153 +1207,6 @@ export function DashboardContainer({
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-teal-600">{formatCurrency(p.valor)}</span>
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(p); setEditingType("poupanca"); }}><Edit className="h-4 w-4" /></Button>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(p); setEditingType("poupanca"); }}><Edit className="h-4 w-4" /></Button>\n                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeletePoupanca(p.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
-
-      {/* ======================================================== */}
-      {/* 6. ABA RELATÓRIOS                                        */}
-      {/* ======================================================== */}
-      {activeTab === "relatorios" && (
-        <div className="space-y-6 animate-fade-in">
-          {/* Overview Info Card */}
-          <Card className="glass-card shadow border-slate-200 dark:border-slate-800 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 dark:from-indigo-950/20 dark:to-purple-950/20">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
-                <FileText className="h-5 w-5" />
-                Centro de Relatórios & Exportações
-              </CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-300">
-                Gere documentos detalhados de suas finanças em formatos portáteis (PDF) para impressão/arquivamento ou exporte dados em planilhas (CSV) para manipular em outros softwares.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
-              <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
-                <p className="text-xs text-muted-foreground font-medium uppercase">Receitas no Período</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{formatCurrency(totalReceitas)}</p>
-              </div>
-              <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
-                <p className="text-xs text-muted-foreground font-medium uppercase">Despesas no Período</p>
-                <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{formatCurrency(totalSaidas)}</p>
-              </div>
-              <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
-                <p className="text-xs text-muted-foreground font-medium uppercase">Total Guardado (Poupança)</p>
-                <p className="text-2xl font-bold text-teal-600 dark:text-teal-400 mt-1">{formatCurrency(totalPoupancas)}</p>
-              </div>
-              <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
-                <p className="text-xs text-muted-foreground font-medium uppercase">Saldo Líquido</p>
-                <p className={`text-2xl font-bold mt-1 ${saldoFinal >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
-                  {formatCurrency(saldoFinal)}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Export Options Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Relatório Mensal PDF Card */}
-            <Card className="glass-card shadow border-slate-200 dark:border-slate-800 flex flex-col justify-between">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2">
-                  <FileDown className="h-6 w-6" />
-                </div>
-                <CardTitle className="text-lg">Relatório Mensal em PDF</CardTitle>
-                <CardDescription>
-                  Gera um extrato financeiro formal contendo todas as receitas, despesas fixas, gastos diários e faturas de parcelamentos do mês de <strong>{getMonthName(selectedMonth)}</strong>.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button 
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2 cursor-pointer"
-                  onClick={() => generateMonthlyPDF(
-                    receitas, 
-                    gastos, 
-                    dividas, 
-                    poupancas, 
-                    parcelasValores, 
-                    parcelasPagamentos, 
-                    selectedMonth, 
-                    userEmail || "usuario@finanzlivre.com"
-                  )}
-                >
-                  <FileDown className="h-4 w-4" />
-                  Baixar PDF Mensal
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Relatório Consolidado Geral PDF Card */}
-            <Card className="glass-card shadow border-slate-200 dark:border-slate-800 flex flex-col justify-between">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400 mb-2">
-                  <BookOpen className="h-6 w-6" />
-                </div>
-                <CardTitle className="text-lg">Relatório Consolidado Geral</CardTitle>
-                <CardDescription>
-                  Gera um documento consolidado com o saldo geral acumulado de receitas/gastos, histórico de reservas de poupança e um <strong>balanço geral de todas as dívidas e parcelamentos ativos</strong>, detalhando o progresso de cada um.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button 
-                  className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2 cursor-pointer"
-                  onClick={() => generateConsolidatedPDF(
-                    dividas, 
-                    receitas, 
-                    gastos, 
-                    poupancas, 
-                    userEmail || "usuario@finanzlivre.com"
-                  )}
-                >
-                  <BookOpen className="h-4 w-4" />
-                  Baixar PDF Consolidado
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* CSV Planilhas Card */}
-            <Card className="glass-card shadow border-slate-200 dark:border-slate-800 flex flex-col justify-between">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-2">
-                  <FileSpreadsheet className="h-6 w-6" />
-                </div>
-                <CardTitle className="text-lg">Planilhas (CSV/Excel)</CardTitle>
-                <CardDescription>
-                  Exporte seus dados financeiros brutos em formato compatível com Excel e Google Sheets. Os arquivos contam com codificação adequada para exibição acentuada em português.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <Button 
-                  variant="outline" 
-                  className="w-full text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer"
-                  onClick={() => exportReceitasCSV(receitas)}
-                >
-                  <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-                  Exportar Receitas (CSV)
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer"
-                  onClick={() => exportGastosCSV(gastos)}
-                >
-                  <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-                  Exportar Despesas (CSV)
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer"
-                  onClick={() => exportDividasCSV(dividas)}
-                >
-                  <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeletePoupanca(p.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -1515,6 +1369,7 @@ export function DashboardContainer({
         type={editingType}
         onSuccess={() => { router.refresh(); }}
       />
+          </div>
         </main>
         <DashboardUpdates />
       </div>
