@@ -44,8 +44,11 @@ type ComprovanteMeta = {
 }
 
 export async function GET(request: Request, ctx: { params: Promise<{ file: string }> }) {
+  const { searchParams } = new URL(request.url)
+  const dividaId = searchParams.get("divida_id")
+
   const user = await getCurrentUser()
-  if (!user) {
+  if (!user && !dividaId) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 })
   }
 
@@ -67,7 +70,19 @@ export async function GET(request: Request, ctx: { params: Promise<{ file: strin
   if (!meta) {
     return NextResponse.json({ error: "Comprovante não encontrado" }, { status: 404 })
   }
-  if (meta.user_id !== user.id) {
+
+  if (!user) {
+    // Se não está logado, valida se o comprovante pertence de fato à divida compartilhada
+    const belongs = await queryOne(
+      `SELECT 1 FROM parcelas_pagamentos 
+       WHERE divida_id = ? AND (comprovante_url LIKE ? OR comprovante_url LIKE ?)
+       LIMIT 1`,
+      [dividaId, `%/comprovantes/${safe}`, `%${safe}`]
+    )
+    if (!belongs) {
+      return NextResponse.json({ error: "Sem permissão para este comprovante" }, { status: 403 })
+    }
+  } else if (meta.user_id !== user.id) {
     return NextResponse.json({ error: "Sem permissão" }, { status: 403 })
   }
 

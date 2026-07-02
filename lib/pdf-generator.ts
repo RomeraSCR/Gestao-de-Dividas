@@ -672,3 +672,174 @@ export function generateConsolidatedPDF(
 
   doc.save("FinanzLivre_Relatorio_Consolidado_Geral.pdf")
 }
+
+export function generateIndividualDividaPDF(
+  divida: any,
+  parcelas: any[],
+  userEmail: string
+) {
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
+  })
+
+  const marginX = 15
+  let currentY = 15
+  const rightAlignX = 195
+
+  // 1. CABEÇALHO DO RELATÓRIO
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(16)
+  doc.setTextColor(30, 41, 59) // Slate-800
+  doc.text("FinanzLivre", marginX, currentY)
+  
+  doc.setFont("helvetica", "normal")
+  doc.setFontSize(9)
+  doc.setTextColor(100, 116, 139) // Slate-500
+  doc.text("Relatório de Acompanhamento de Dívida", marginX, currentY + 4)
+
+  // Data de Emissão à direita
+  doc.setFont("helvetica", "normal")
+  doc.setFontSize(8.5)
+  doc.setTextColor(148, 163, 184)
+  const todayStr = new Date().toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  })
+  doc.text(`Emitido em: ${todayStr}`, rightAlignX, currentY, { align: "right" })
+  doc.text(`Usuário: ${userEmail}`, rightAlignX, currentY + 4, { align: "right" })
+
+  // Linha separadora horizontal
+  currentY += 8
+  doc.setDrawColor(226, 232, 240) // Slate-200
+  doc.setLineWidth(0.5)
+  doc.line(marginX, currentY, rightAlignX, currentY)
+
+  // 2. RESUMO DA DÍVIDA
+  currentY += 10
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(12)
+  doc.setTextColor(30, 41, 59)
+  doc.text("Informações da Compra", marginX, currentY)
+
+  currentY += 5
+  // Caixa com as estatísticas principais
+  const isQuitada = divida.parcelas_pagas >= divida.total_parcelas
+  const statusStr = isQuitada ? "QUITADA" : "EM ANDAMENTO"
+  const statusColor = isQuitada ? [22, 163, 74] : [220, 38, 38] // Green vs Red
+
+  doc.setFillColor(248, 250, 252) // Slate-50
+  doc.setDrawColor(226, 232, 240)
+  doc.setLineWidth(0.3)
+  doc.rect(marginX, currentY, rightAlignX - marginX, 35, "DF")
+
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(10)
+  doc.setTextColor(100, 116, 139)
+  doc.text("Produto:", marginX + 5, currentY + 7)
+  doc.text("Responsável:", marginX + 5, currentY + 14)
+  doc.text("Estabelecimento:", marginX + 5, currentY + 21)
+  doc.text("Status Atual:", marginX + 5, currentY + 28)
+
+  doc.setFont("helvetica", "medium")
+  doc.setTextColor(30, 41, 59)
+  doc.text(String(divida.produto || ""), marginX + 45, currentY + 7)
+  doc.text(String(divida.autor || ""), marginX + 45, currentY + 14)
+  doc.text(String(divida.loja || ""), marginX + 45, currentY + 21)
+  
+  doc.setFont("helvetica", "bold")
+  doc.setTextColor(statusColor[0], statusColor[1], statusColor[2])
+  doc.text(statusStr, marginX + 45, currentY + 28)
+
+  // Coluna direita da caixa de resumo
+  doc.setFont("helvetica", "bold")
+  doc.setTextColor(100, 116, 139)
+  doc.text("Parcelas Pagas:", marginX + 115, currentY + 7)
+  doc.text("Valor Parcela:", marginX + 115, currentY + 14)
+  doc.text("Total Acumulado:", marginX + 115, currentY + 21)
+
+  doc.setFont("helvetica", "normal")
+  doc.setTextColor(30, 41, 59)
+  doc.text(`${divida.parcelas_pagas} de ${divida.total_parcelas}`, marginX + 150, currentY + 7)
+  
+  const valorUnitario = parseFloat(divida.valor_parcela) || 0
+  const valorTotal = valorUnitario * divida.total_parcelas
+  doc.text(formatBRL(valorUnitario), marginX + 150, currentY + 14)
+  doc.setFont("helvetica", "bold")
+  doc.text(formatBRL(valorTotal), marginX + 150, currentY + 21)
+
+  currentY += 45
+
+  // 3. TABELA DE DETALHAMENTO DE PARCELAS
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(12)
+  doc.setTextColor(30, 41, 59)
+  doc.text("Cronograma de Pagamentos", marginX, currentY)
+  currentY += 4
+
+  const tableRows = parcelas.map((p: any) => {
+    const statusText = p.status === "paga" ? "PAGA" : "PENDENTE"
+    const dataPagamento = p.pagamento?.data_pagamento ? formatDateBR(p.pagamento.data_pagamento) : "-"
+    return [
+      `Parcela ${p.numero_parcela}`,
+      formatBRL(p.valor),
+      formatDateBR(p.due_date),
+      statusText,
+      dataPagamento
+    ]
+  })
+
+  autoTable(doc, {
+    startY: currentY,
+    head: [["Parcela", "Valor", "Data Vencimento", "Status", "Data Pagamento"]],
+    body: tableRows,
+    headStyles: {
+      fillColor: [30, 41, 59], // Slate-800
+      textColor: [255, 255, 255],
+      fontStyle: "bold",
+      fontSize: 9,
+    },
+    bodyStyles: {
+      fontSize: 8.5,
+      textColor: [51, 65, 85],
+    },
+    alternateRowStyles: {
+      fillColor: [248, 250, 252],
+    },
+    columnStyles: {
+      3: { fontStyle: "bold" } // Status em negrito
+    },
+    didDrawCell: (data) => {
+      // Colorir o texto PAGA de verde e PENDENTE de vermelho
+      if (data.column.index === 3 && data.cell.section === "body") {
+        if (data.cell.text[0] === "PAGA") {
+          doc.setTextColor(22, 163, 74)
+        } else {
+          doc.setTextColor(220, 38, 38)
+        }
+      }
+    },
+    margin: { left: marginX, right: marginX }
+  })
+
+  // Rodapé
+  const pageCount = (doc as any).internal.getNumberOfPages()
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i)
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(7.5)
+    doc.setTextColor(148, 163, 184)
+    doc.setDrawColor(226, 232, 240)
+    doc.setLineWidth(0.3)
+    doc.line(marginX, 282, rightAlignX, 282)
+    doc.text("FinanzLivre - Acompanhamento de Dívida Individual", marginX, 286)
+    doc.text(`Página ${i} de ${pageCount}`, rightAlignX, 286, { align: "right" })
+  }
+
+  const cleanName = String(divida.produto || "divida").replace(/[^a-zA-Z0-9]/g, "_")
+  doc.save(`FinanzLivre_Divida_${cleanName}.pdf`)
+}

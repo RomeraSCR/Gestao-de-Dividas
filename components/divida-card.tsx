@@ -393,8 +393,7 @@ export function DividaCard({ divida, onEdit, onSuccess }: DividaCardProps) {
       <HistoricoParcelasDialog
         open={showHistorico}
         onOpenChange={setShowHistorico}
-        dividaId={divida.id}
-        titulo={divida.produto}
+        divida={divida}
       />
     </Card>
   )

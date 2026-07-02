@@ -11,10 +11,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { ExternalLink, FileText, Loader2, Upload, CheckCircle2, Clock, X } from "lucide-react"
+import { ExternalLink, FileText, Loader2, Upload, CheckCircle2, Clock, X, Share2, FileDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ComprovanteViewerDialog } from "@/components/comprovante-viewer-dialog"
+import { generateIndividualDividaPDF } from "@/lib/pdf-generator"
 
 type ParcelaHistorico = {
   numero_parcela: number
@@ -50,14 +51,14 @@ function formatDateBR(yyyyMMdd: string) {
 export function HistoricoParcelasDialog({
   open,
   onOpenChange,
-  dividaId,
-  titulo,
+  divida,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  dividaId: string
-  titulo: string
+  divida: any
 }) {
+  const dividaId = divida.id
+  const titulo = divida.produto
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<HistoricoResponse | null>(null)
@@ -67,6 +68,19 @@ export function HistoricoParcelasDialog({
   const [uploadParcela, setUploadParcela] = useState<number | null>(null)
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const handleShareLink = () => {
+    const url = `${window.location.origin}/publico/divida/${dividaId}`
+    navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleGenerateIndividualPDF = () => {
+    if (!data) return
+    generateIndividualDividaPDF(divida, data.parcelas, "usuario@finanzlivre.com")
+  }
 
   useEffect(() => {
     if (!open) return
@@ -204,6 +218,27 @@ export function HistoricoParcelasDialog({
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900 text-sm">
                 <Clock className="h-4 w-4 text-amber-600 dark:text-amber-450" />
                 <span className="font-semibold text-amber-700 dark:text-amber-350">{pendentes.length} pendentes</span>
+              </div>
+
+              <div className="flex w-full items-center gap-2 mt-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleGenerateIndividualPDF}
+                  className="flex-1 flex items-center justify-center gap-1.5 h-8 text-xs font-semibold border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                >
+                  <FileDown className="h-3.5 w-3.5 text-indigo-500" />
+                  Gerar Relatório PDF
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleShareLink}
+                  className="flex-1 flex items-center justify-center gap-1.5 h-8 text-xs font-semibold border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                >
+                  <Share2 className="h-3.5 w-3.5 text-indigo-500" />
+                  {copied ? "Link Copiado!" : "Compartilhar Link"}
+                </Button>
               </div>
             </div>
           )}
