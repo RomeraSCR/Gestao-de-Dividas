@@ -111,7 +111,7 @@
 
 Acesse a demonstração online:
 
-🔗 **[dividas.neonproject.cloud](https://dividas.neonproject.cloud)**
+🔗 **[dividas.neonproject.cloud](https://nrfinanceiro.site/)**
 
 > Use o botão "Ver Demo" para acessar com uma conta de demonstração.
 
