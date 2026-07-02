@@ -1302,7 +1302,6 @@ export function DashboardContainer({
         type={editingType}
         onSuccess={() => { router.refresh(); }}
       />
-          </div>
         </main>
         <DashboardUpdates />
       </div>
