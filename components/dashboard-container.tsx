@@ -5,16 +5,16 @@ import { useRouter } from "next/navigation"
 import type { Divida, Receita, Gasto, Poupanca } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import { CurrencyInput } from "@/components/ui/currency-input"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { DashboardHeaderShell } from "@/components/dashboard-header-shell"
 import { DashboardUpdates } from "@/components/dashboard-updates"
 import { ItemEditDialog } from "@/components/item-edit-dialog"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import {
   createReceita,
   deleteReceita,
@@ -251,8 +251,7 @@ export function DashboardContainer({
   
   const handleAddReceita = async (e: React.FormEvent) => {
     e.preventDefault()
-    const cleanVal = recVal.replace(/\./g, "").replace(",", ".")
-    const valor = parseFloat(cleanVal)
+    const valor = parseFloat(recVal.replace(",", "."))
     if (isNaN(valor) || valor <= 0 || !recDesc) return
 
     startTransition(async () => {
@@ -283,8 +282,7 @@ export function DashboardContainer({
 
   const handleAddGasto = async (e: React.FormEvent, tipo: "mensal" | "diario") => {
     e.preventDefault()
-    const cleanVal = gasVal.replace(/\./g, "").replace(",", ".")
-    const valor = parseFloat(cleanVal)
+    const valor = parseFloat(gasVal.replace(",", "."))
     if (isNaN(valor) || valor <= 0 || !gasDesc) return
 
     startTransition(async () => {
@@ -317,8 +315,7 @@ export function DashboardContainer({
 
   const handleAddPoupanca = async (e: React.FormEvent) => {
     e.preventDefault()
-    const cleanVal = pouVal.replace(/\./g, "").replace(",", ".")
-    const valor = parseFloat(cleanVal)
+    const valor = parseFloat(pouVal.replace(",", "."))
     if (isNaN(valor) || valor <= 0 || !pouDesc) return
 
     startTransition(async () => {
@@ -362,108 +359,38 @@ export function DashboardContainer({
               <p className="text-gray-600 dark:text-gray-300 text-lg">Controle suas receitas, despesas, parcelamentos e poupança</p>
             </div>
           </div>
-          <div className="w-full">
-      {/* SELETOR DE MÊS E MENU DE ABAS */}
-      <div className="flex flex-col gap-6 mb-8 bg-card border border-border p-5 rounded-lg shadow-sm">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={handlePrevMonth}
-              className="h-9 w-9 rounded-full border border-border hover:bg-slate-100 dark:hover:bg-slate-800 bg-transparent text-slate-700 dark:text-slate-300"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-            <div className="text-center min-w-[160px]">
-              <h2 className="text-base font-bold capitalize text-slate-800 dark:text-gray-100">
-                {getMonthName(selectedMonth)}
-              </h2>
-            </div>
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={handleNextMonth}
-              className="h-9 w-9 rounded-full border border-border hover:bg-slate-100 dark:hover:bg-slate-800 bg-transparent text-slate-700 dark:text-slate-300"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </Button>
-          </div>
-          <div className="text-xs text-muted-foreground font-medium">
-            Selecione o mês para filtrar as informações
-          </div>
-        </div>
 
-        {/* MENU DE ABAS (Layout Stripe/Vercel profissional) */}
-        <div className="flex border-b border-border w-full overflow-x-auto no-scrollbar scroll-smooth gap-6 sm:gap-8">
-          <button
-            onClick={() => setActiveTab("resumo")}
-            className={`flex items-center gap-2 pb-3.5 text-sm font-semibold transition-all border-b-2 px-1 relative -mb-[2px] ${
-              activeTab === "resumo"
-                ? "border-primary text-primary"
-                : "border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
-          >
-            <Calculator className="h-4 w-4" />
-            Resumo Geral
-          </button>
-          <button
-            onClick={() => setActiveTab("dividas")}
-            className={`flex items-center gap-2 pb-3.5 text-sm font-semibold transition-all border-b-2 px-1 relative -mb-[2px] ${
-              activeTab === "dividas"
-                ? "border-primary text-primary"
-                : "border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
-          >
-            <Layers className="h-4 w-4" />
-            Parcelamentos
-          </button>
-          <button
-            onClick={() => setActiveTab("controle")}
-            className={`flex items-center gap-2 pb-3.5 text-sm font-semibold transition-all border-b-2 px-1 relative -mb-[2px] ${
-              activeTab === "controle"
-                ? "border-primary text-primary"
-                : "border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
-          >
-            <Wallet className="h-4 w-4" />
-            Controle Mensal
-          </button>
-          <button
-            onClick={() => setActiveTab("diarios")}
-            className={`flex items-center gap-2 pb-3.5 text-sm font-semibold transition-all border-b-2 px-1 relative -mb-[2px] ${
-              activeTab === "diarios"
-                ? "border-primary text-primary"
-                : "border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
-          >
-            <Sparkles className="h-4 w-4" />
-            Gastos Diários
-          </button>
-          <button
-            onClick={() => setActiveTab("poupanca")}
-            className={`flex items-center gap-2 pb-3.5 text-sm font-semibold transition-all border-b-2 px-1 relative -mb-[2px] ${
-              activeTab === "poupanca"
-                ? "border-primary text-primary"
-                : "border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
-          >
-            <PiggyBank className="h-4 w-4" />
-            Poupança
-          </button>
-          <button
-            onClick={() => setActiveTab("relatorios")}
-            className={`flex items-center gap-2 pb-3.5 text-sm font-semibold transition-all border-b-2 px-1 relative -mb-[2px] ${
-              activeTab === "relatorios"
-                ? "border-primary text-primary"
-                : "border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
-          >
-            <FileText className="h-4 w-4" />
-            Relatórios
-          </button>
-        </div>
-      </div>
+          {/* SELETOR DE MÊS */}
+          <div className="flex flex-col gap-6 mb-8 bg-card border border-border p-5 rounded-lg shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={handlePrevMonth}
+                  className="h-9 w-9 rounded-full border border-border hover:bg-slate-100 dark:hover:bg-slate-800 bg-transparent text-slate-700 dark:text-slate-300"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <div className="text-center min-w-[160px]">
+                  <h2 className="text-base font-bold capitalize text-slate-800 dark:text-gray-100">
+                    {getMonthName(selectedMonth)}
+                  </h2>
+                </div>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={handleNextMonth}
+                  className="h-9 w-9 rounded-full border border-border hover:bg-slate-100 dark:hover:bg-slate-800 bg-transparent text-slate-700 dark:text-slate-300"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="text-xs text-muted-foreground font-medium">
+                Selecione o mês para filtrar as informações
+              </div>
+            </div>
+          </div>
 
       {/* ======================================================== */}
       {/* 1. ABA RESUMO GERAL                                      */}
@@ -837,12 +764,13 @@ export function DashboardContainer({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="recVal">Valor (R$)</Label>
-                      <CurrencyInput
+                      <Input
                         id="recVal"
                         required
+                        type="text"
                         placeholder="0,00"
                         value={recVal}
-                        onChange={setRecVal}
+                        onChange={e => setRecVal(e.target.value)}
                       />
                     </div>
                     <div className="grid gap-2">
@@ -885,7 +813,7 @@ export function DashboardContainer({
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-emerald-600">{formatCurrency(r.valor)}</span>
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(r); setEditingType("receita"); }}><Edit className="h-4 w-4" /></Button>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(r); setEditingType("receita"); }}><Edit className="h-4 w-4" /></Button>\n                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteReceita(r.id)}>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteReceita(r.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -922,12 +850,13 @@ export function DashboardContainer({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="gasVal">Valor (R$)</Label>
-                      <CurrencyInput
+                      <Input
                         id="gasVal"
                         required
+                        type="text"
                         placeholder="0,00"
                         value={gasVal}
-                        onChange={setGasVal}
+                        onChange={e => setGasVal(e.target.value)}
                       />
                     </div>
                     <div className="grid gap-2">
@@ -970,7 +899,7 @@ export function DashboardContainer({
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-red-500">{formatCurrency(g.valor)}</span>
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(g); setEditingType("gasto"); }}><Edit className="h-4 w-4" /></Button>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(g); setEditingType("gasto"); }}><Edit className="h-4 w-4" /></Button>\n                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteGasto(g.id)}>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteGasto(g.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -1012,13 +941,14 @@ export function DashboardContainer({
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="gasDiaVal">Valor (R$)</Label>
-                    <CurrencyInput
-                      id="gasDiaVal"
+                    <Label htmlFor="gasVal">Valor (R$)</Label>
+                    <Input
+                      id="gasVal"
                       required
+                      type="text"
                       placeholder="0,00"
                       value={gasVal}
-                      onChange={setGasVal}
+                      onChange={e => setGasVal(e.target.value)}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -1102,7 +1032,10 @@ export function DashboardContainer({
                               <td className="px-4 py-3.5 text-right font-bold text-slate-800 dark:text-gray-100">
                                 {formatCurrency(g.valor)}
                               </td>
-                              <td className="px-4 py-3.5 text-center">
+                              <td className="px-4 py-3.5 text-center flex items-center justify-center gap-1">
+                                <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={() => { setEditingItem(g); setEditingType("gasto"); }}>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
                                 <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDeleteGasto(g.id)}>
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -1149,12 +1082,13 @@ export function DashboardContainer({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="pouVal">Valor a Guardar (R$)</Label>
-                    <CurrencyInput
+                    <Input
                       id="pouVal"
                       required
+                      type="text"
                       placeholder="0,00"
                       value={pouVal}
-                      onChange={setPouVal}
+                      onChange={e => setPouVal(e.target.value)}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -1361,7 +1295,6 @@ export function DashboardContainer({
           </div>
         </div>
       )}
-
       <ItemEditDialog
         open={!!editingItem}
         onOpenChange={(open) => !open && setEditingItem(null)}
