@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { logout } from "@/app/auth/actions"
 import { LogOut, User, Info } from "lucide-react"
-import { InstallBanner } from "@/components/install-banner"
+import { InstallAppButton } from "@/components/install-app-button"
 import { useRouter } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { DonateDialog } from "@/components/donate-dialog"
@@ -93,6 +93,12 @@ export function DashboardHeader({ email }: DashboardHeaderProps) {
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <InstallAppButton
+            variant="outline"
+            size="sm"
+            className="hidden sm:flex border-emerald-500/30 text-emerald-600 dark:text-emerald-450 hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-350 cursor-pointer text-xs"
+            label="Instalar App"
+          />
           <DonateDialog />
           <ThemeToggle />
           <DropdownMenu>

@@ -53,7 +53,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
   return (
-    <Sidebar variant="sidebar" className="border-r border-border bg-slate-50 dark:bg-slate-950">
+    <Sidebar variant="sidebar" className="border-r border-sidebar-border bg-sidebar/90 backdrop-blur-lg">
       <SidebarHeader className="h-16 flex items-center px-4 border-b border-border">
         <div className="flex items-center gap-2 font-bold text-lg text-primary">
           <CreditCard className="h-6 w-6" />

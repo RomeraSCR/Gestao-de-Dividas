@@ -347,7 +347,10 @@ export function DashboardContainer({
   return (
     <>
       <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950 flex flex-col relative w-full h-screen">
+      <div className="flex-1 overflow-auto bg-background text-foreground flex flex-col relative w-full h-screen">
+        {/* Modern radial glow mesh */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_-10%,rgba(99,102,241,0.06),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_60%_50%_at_50%_-10%,rgba(99,102,241,0.12),rgba(0,0,0,0))] pointer-events-none -z-10" />
+        
         <DashboardHeaderShell email={userEmail ?? null} />
         <main className="container mx-auto px-4 py-8 max-w-7xl flex-1">
           <div className="mb-8 flex items-center gap-4">
@@ -356,12 +359,12 @@ export function DashboardContainer({
               <h1 className="text-4xl md:text-5xl font-extrabold mb-3 text-slate-900 dark:text-white tracking-tight">
                 Dashboard Financeiro
               </h1>
-              <p className="text-gray-600 dark:text-gray-300 text-lg">Controle suas receitas, despesas, parcelamentos e poupança</p>
+              <p className="text-muted-foreground text-lg">Controle suas receitas, despesas, parcelamentos e poupança</p>
             </div>
           </div>
 
           {/* SELETOR DE MÊS */}
-          <div className="flex flex-col gap-6 mb-8 bg-card border border-border p-5 rounded-lg shadow-sm">
+          <div className="flex flex-col gap-6 mb-8 glass-card p-6 shadow-xl">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <Button
